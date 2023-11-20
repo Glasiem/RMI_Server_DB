@@ -1,11 +1,11 @@
-package org.example.remote;
+package com.example.rmi.remote;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
-import org.example.component.Column;
-import org.example.component.Row;
-import org.example.component.column.ColumnType;
+import com.example.rmi.component.Column;
+import com.example.rmi.component.Row;
+import com.example.rmi.component.column.ColumnType;
 
 public interface RemoteDB extends Remote {
 
@@ -41,4 +41,4 @@ public interface RemoteDB extends Remote {
 
   public Boolean editCell(int tableIndex, int rowIndex, int columnIndex, String value) throws RemoteException;
   public void createTestTable() throws RemoteException;
-}
+  }

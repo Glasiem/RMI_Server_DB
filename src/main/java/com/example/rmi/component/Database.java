@@ -1,4 +1,4 @@
-package org.example.component;
+package com.example.rmi.component;
 
 import java.util.ArrayList;
 import java.util.List;

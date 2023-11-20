@@ -1,4 +1,4 @@
-package org.example.component;
+package com.example.rmi.component;
 
 import java.io.Serializable;
 

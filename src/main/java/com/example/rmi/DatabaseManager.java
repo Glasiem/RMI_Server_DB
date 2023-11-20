@@ -1,18 +1,13 @@
-package org.example;
+package com.example.rmi;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.TableColumn;
-import org.example.component.Column;
-import org.example.component.Database;
-import org.example.component.Row;
-import org.example.component.Table;
-import org.example.component.column.*;
+
+import com.example.rmi.component.Table;
+import com.example.rmi.component.Column;
+import com.example.rmi.component.Database;
+import com.example.rmi.component.Row;
+import com.example.rmi.component.column.*;
 
 public class DatabaseManager {
     private static DatabaseManager instance;

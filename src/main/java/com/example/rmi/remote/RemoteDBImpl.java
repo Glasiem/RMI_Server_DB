@@ -1,13 +1,14 @@
-package org.example.remote;
+package com.example.rmi.remote;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import org.example.DatabaseManager;
-import org.example.component.Column;
-import org.example.component.Row;
-import org.example.component.Table;
-import org.example.component.column.ColumnType;
+
+import com.example.rmi.component.Table;
+import com.example.rmi.DatabaseManager;
+import com.example.rmi.component.Column;
+import com.example.rmi.component.Row;
+import com.example.rmi.component.column.ColumnType;
 
 public class RemoteDBImpl implements RemoteDB{
 

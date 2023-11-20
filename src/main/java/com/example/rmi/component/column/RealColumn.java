@@ -1,7 +1,7 @@
-package org.example.component.column;
+package com.example.rmi.component.column;
 
 
-import org.example.component.Column;
+import com.example.rmi.component.Column;
 
 public class RealColumn extends Column {
 

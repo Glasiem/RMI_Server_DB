@@ -1,8 +1,9 @@
-package org.example.component;
+package com.example.rmi.component;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.example.component.column.*;
+
+import com.example.rmi.component.column.*;
 
 public class Table {
     public String name;
