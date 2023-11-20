@@ -1,4 +1,4 @@
-package org.dbms.database.component.column;
+package org.example.component.column;
 
 public enum ColumnType {
     INT,

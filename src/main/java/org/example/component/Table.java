@@ -1,9 +1,8 @@
-package org.dbms.database.component;
-
-import org.dbms.database.component.column.*;
+package org.example.component;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.example.component.column.*;
 
 public class Table {
     public String name;

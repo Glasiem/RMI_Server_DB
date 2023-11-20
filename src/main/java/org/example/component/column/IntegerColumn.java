@@ -1,6 +1,6 @@
-package org.dbms.database.component.column;
+package org.example.component.column;
 
-import org.dbms.database.component.Column;
+import org.example.component.Column;
 
 public class IntegerColumn extends Column {
 

@@ -1,4 +1,4 @@
-package org.dbms.database.component;
+package org.example.component;
 
 import java.util.ArrayList;
 import java.util.List;

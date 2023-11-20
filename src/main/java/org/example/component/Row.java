@@ -1,9 +1,10 @@
-package org.dbms.database.component;
+package org.example.component;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Row {
+public class Row  implements Serializable {
     public List<String> values = new ArrayList<>();
 
     public String getAt(int index){

@@ -1,6 +1,8 @@
-package org.dbms.database.component;
+package org.example.component;
 
-public abstract class Column {
+import java.io.Serializable;
+
+public abstract class Column  implements Serializable {
     public String name;
     public String type;
 

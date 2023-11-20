@@ -1,24 +1,22 @@
-package org.dbms.database;
+package org.example;
 
-import org.dbms.database.file.DatabaseExporter;
-import org.dbms.database.file.DatabaseImporter;
-import org.dbms.database.ui.DBMS;
-import org.dbms.database.ui.CustomTable;
-import org.dbms.database.ui.CustomTableModel;
-import org.dbms.database.component.column.*;
-import org.dbms.database.component.Column;
-import org.dbms.database.component.Database;
-import org.dbms.database.component.Row;
-import org.dbms.database.component.Table;
-
-import javax.swing.*;
-import javax.swing.table.TableColumn;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.TableColumn;
+import org.example.component.Column;
+import org.example.component.Database;
+import org.example.component.Row;
+import org.example.component.Table;
+import org.example.component.column.*;
 
 public class DatabaseManager {
     private static DatabaseManager instance;
-    public static DBMS instanceCSW;
+//    public static DBMS instanceCSW;
 
     private DatabaseManager(){
     }
@@ -26,88 +24,129 @@ public class DatabaseManager {
     public static DatabaseManager getInstance(){
         if (instance == null){
             instance = new DatabaseManager();
-            instanceCSW = DBMS.getInstance();
+//            instanceCSW = DBMS.getInstance();
         }
         return instance;
     }
 
     public static Database database;
 
-    public void openDB(String path){
-        DatabaseImporter.importDatabase(path);
+    public void populateTable() {
+        Table table = new Table("testTable");
+        table.addColumn(new IntegerColumn("column1"));
+        table.addColumn(new RealColumn("column2"));
+        table.addColumn(new StringColumn("column3"));
+        table.addColumn(new CharColumn("column4"));
+        table.addColumn(new MoneyColumn("column5"));
+        table.addColumn(new MoneyInvlColumn("column6","0","1000"));
+        Row row1 = new Row();
+        row1.values.add("10");
+        row1.values.add("10.0");
+        row1.values.add("10");
+        row1.values.add("1");
+        row1.values.add("10.00");
+        row1.values.add("10.00");
+        table.addRow(row1);
+        Row row2 = new Row();
+        row2.values.add("15");
+        row2.values.add("15.0");
+        row2.values.add("15");
+        row2.values.add("3");
+        row2.values.add("15.00");
+        row2.values.add("15.00");
+        table.addRow(row2);
+        database.addTable(table);
     }
 
-    public void renameDB(String name){
+//    public void openDB(String path){
+//        DatabaseImporter.importDatabase(path);
+//    }
+
+    public String renameDB(String name){
         if (name != null && !name.isEmpty()) {
             database.setName(name);
-            instanceCSW.databaseLabel.setText(database.name);
+//            instanceCSW.databaseLabel.setText(database.name);
+            return name;
         }
+        else return null;
     }
 
-    public void saveDB(String path) {
-        DatabaseExporter.exportDatabase(database, path);
-    }
+//    public void saveDB(String path) {
+//        DatabaseExporter.exportDatabase(database, path);
+//    }
 
-    public void deleteDB() {
-        database = null;
-        while (instanceCSW.tabbedPane.getTabCount() > 0) {
-            instanceCSW.tabbedPane.removeTabAt(0);
-        }
-    }
+//    public void deleteDB() {
+//        database = null;
+//        while (instanceCSW.tabbedPane.getTabCount() > 0) {
+//            instanceCSW.tabbedPane.removeTabAt(0);
+//        }
+//    }
 
     public void createDB(String name) {
         database = new Database(name);
-        instanceCSW.databaseLabel.setText(database.name);
+//        instanceCSW.databaseLabel.setText(database.name);
     }
 
-    public boolean existDB(){
-        return database != null;
-    }
+//    public boolean existDB(){
+//        return database != null;
+//    }
 
-    public void addTable(String name){
+    public Boolean addTable(String name){
         if (name != null && !name.isEmpty()) {
-            JPanel tablePanel = instanceCSW.createTablePanel();
+//            JPanel tablePanel = instanceCSW.createTablePanel();
 
-            DBMS.getInstance().tabbedPane.addTab(name, tablePanel);
+//            DBMS.getInstance().tabbedPane.addTab(name, tablePanel);
             Table table = new Table(name);
             database.addTable(table);
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
-    public void renameTable(int tableIndex, String name){
+    public Boolean renameTable(int tableIndex, String name){
         if (name != null && !name.isEmpty() && tableIndex != -1) {
-            instanceCSW.tabbedPane.setTitleAt(tableIndex,name);
+//            instanceCSW.tabbedPane.setTitleAt(tableIndex,name);
             database.tables.get(tableIndex).setName(name);
+            return true;
+        }
+        else{
+            return false;
         }
     }
 
-    public void deleteTable(int tableIndex){
+    public Boolean deleteTable(int tableIndex){
 
         if (tableIndex != -1) {
-            instanceCSW.tabbedPane.removeTabAt(tableIndex);
+//            instanceCSW.tabbedPane.removeTabAt(tableIndex);
 
             database.deleteTable(tableIndex);
+            return true;
+        }
+        else {
+            return false;
         }
     }
 
-    public void addColumn(int tableIndex, String columnName, ColumnType columnType) {
-        addColumn(tableIndex, columnName, columnType, "", ""); // Default min and max
+    public Boolean addColumn(int tableIndex, String columnName, ColumnType columnType) {
+        return addColumn(tableIndex, columnName, columnType, "", ""); // Default min and max
     }
 
-    public void addColumn(int tableIndex, String columnName, ColumnType columnType, String min, String max) {
+    public Boolean addColumn(int tableIndex, String columnName, ColumnType columnType, String min, String max) {
         if (columnName != null && !columnName.isEmpty()) {
             if (tableIndex != -1) {
-                JPanel tablePanel = (JPanel) instanceCSW.tabbedPane.getComponentAt(tableIndex);
-                JScrollPane scrollPane = (JScrollPane) tablePanel.getComponent(0);
-                JTable table = (JTable) scrollPane.getViewport().getView();
-                CustomTableModel tableModel = (CustomTableModel) table.getModel();
+//                JPanel tablePanel = (JPanel) instanceCSW.tabbedPane.getComponentAt(tableIndex);
+//                JScrollPane scrollPane = (JScrollPane) tablePanel.getComponent(0);
+//                JTable table = (JTable) scrollPane.getViewport().getView();
+//                CustomTableModel tableModel = (CustomTableModel) table.getModel();
 
 //                columnName +=  ;
-                if(!min.equals("") && !max.equals("")){
-                    tableModel.addColumn(columnName + " (" + columnType.name() + ")" + "(" + min + ":" + max + ")");
-                } else {
-                    tableModel.addColumn(columnName + " (" + columnType.name() + ")");
-                }
+//                if(!min.equals("") && !max.equals("")){
+//                    tableModel.addColumn(columnName + " (" + columnType.name() + ")" + "(" + min + ":" + max + ")");
+//                } else {
+//                    tableModel.addColumn(columnName + " (" + columnType.name() + ")");
+//                }
 
                 switch (columnType) {
                     case INT -> {
@@ -138,39 +177,53 @@ public class DatabaseManager {
                 for (Row row : database.tables.get(tableIndex).rows) {
                     row.values.add("");
                 }
+                return true;
             }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
         }
     }
 
 
-    public void renameColumn(int tableIndex, int columnIndex, String oldColumnName, String newColumnName, JTable table){
+    public Boolean renameColumn(int tableIndex, int columnIndex/*, String oldColumnName*/, String newColumnName/*, JTable table*/){
         if (newColumnName != null && !newColumnName.isEmpty()) {
             if (tableIndex != -1 && columnIndex != -1) {
-                TableColumn column = table.getColumnModel().getColumn(columnIndex);
-                column.setHeaderValue(column.getHeaderValue().toString().replace(oldColumnName, newColumnName));
-                table.getTableHeader().repaint();
+//                TableColumn column = table.getColumnModel().getColumn(columnIndex);
+//                column.setHeaderValue(column.getHeaderValue().toString().replace(oldColumnName, newColumnName));
+//                table.getTableHeader().repaint();
 
                 database.tables.get(tableIndex).columns.get(columnIndex).setName(newColumnName);
+                return true;
             }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
         }
     }
 
-    public void changeColumnType(int tableIndex, int columnIndex, ColumnType columnType, JTable table){
-        changeColumnType(tableIndex, columnIndex, columnType, table, "", "");
+    public Boolean changeColumnType(int tableIndex, int columnIndex, ColumnType columnType/*, JTable table*/){
+        return changeColumnType(tableIndex, columnIndex, columnType,/*table,*/ "", "");
     }
 
-    public void changeColumnType(int tableIndex, int columnIndex, ColumnType columnType, JTable table, String min, String max){
+    public Boolean changeColumnType(int tableIndex, int columnIndex, ColumnType columnType/*, JTable table*/, String min, String max){
         if (tableIndex != -1 && columnIndex != -1) {
 
-            String name = database.tables.get(tableIndex).columns.get(columnIndex).name;
-            TableColumn column1 = table.getColumnModel().getColumn(columnIndex);
-            if(!min.equals("") && !max.equals("")){
-                column1.setHeaderValue(name + " (" + columnType.name() + ")" + "(" + min + ":" + max + ")");
-            } else {
-                column1.setHeaderValue(name + " (" + columnType.name() + ")");
-            }
-
-            table.getTableHeader().repaint();
+//            String name = database.tables.get(tableIndex).columns.get(columnIndex).name;
+//            TableColumn column1 = table.getColumnModel().getColumn(columnIndex);
+//            if(!min.equals("") && !max.equals("")){
+//                column1.setHeaderValue(name + " (" + columnType.name() + ")" + "(" + min + ":" + max + ")");
+//            } else {
+//                column1.setHeaderValue(name + " (" + columnType.name() + ")");
+//            }
+//
+//            table.getTableHeader().repaint();
 
 
             switch (columnType) {
@@ -204,66 +257,78 @@ public class DatabaseManager {
             for (Row row: database.tables.get(tableIndex).rows) {
                 row.values.set(columnIndex,"");
             }
-            for (int i = 0; i < database.tables.get(tableIndex).rows.size(); i++) {
-                table.setValueAt("", i, columnIndex);
-            }
-        }
-    }
-
-    public void deleteColumn(int tableIndex, int columnIndex, CustomTableModel tableModel){
-
-        if (columnIndex != -1) {
-            tableModel.removeColumn(columnIndex);
-            database.tables.get(tableIndex).deleteColumn(columnIndex);
-        }
-    }
-
-    public void addRow(int tableIndex, Row row){
-
-        if (tableIndex != -1) {
-            JPanel tablePanel = (JPanel) instanceCSW.tabbedPane.getComponentAt(tableIndex);
-            JScrollPane scrollPane = (JScrollPane) tablePanel.getComponent(0);
-            JTable table = (JTable) scrollPane.getViewport().getView();
-            CustomTableModel tableModel = (CustomTableModel) table.getModel();
-            tableModel.addRow(new Object[tableModel.getColumnCount()]);
-
-            database.tables.get(tableIndex).addRow(row);
-            System.out.println(row.values);
-        }
-    }
-
-    public void deleteRow(int tableIndex, int rowIndex, CustomTableModel tableModel){
-
-        if (rowIndex != -1) {
-            tableModel.removeRow(rowIndex);
-
-            database.tables.get(tableIndex).deleteRow(rowIndex);
-        }
-    }
-
-    public void updateCellValue(String value, int tableIndex, int columnIndex, int rowIndex, CustomTable table){
-        if (database.tables.get(tableIndex).columns.get(columnIndex).validate(value)){
-            database.tables.get(tableIndex).rows.get(rowIndex).setAt(columnIndex,value.trim());
+            return true;
+//            for (int i = 0; i < database.tables.get(tableIndex).rows.size(); i++) {
+//                table.setValueAt("", i, columnIndex);
+//            }
         }
         else {
-            String data = database.tables.get(tableIndex).rows.get(rowIndex).getAt(columnIndex);
-            if (data != null){
-                table.setValueAt(data, rowIndex, columnIndex);
-            }
-            else {
-                table.setValueAt("", rowIndex, columnIndex);
-            }
-
-            JFrame frame = new JFrame("Помилка!!!");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-            JOptionPane.showMessageDialog(
-                    frame,
-                    "Введено некоректне значення",
-                    "Помилка!!!",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+            return false;
         }
+    }
+
+    public Boolean deleteColumn(int tableIndex, int columnIndex/*, CustomTableModel tableModel*/){
+        if (columnIndex != -1) {
+//            tableModel.removeColumn(columnIndex);
+            database.tables.get(tableIndex).deleteColumn(columnIndex);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public Boolean addRow(int tableIndex, Row row){
+        if (tableIndex != -1) {
+//            JPanel tablePanel = (JPanel) instanceCSW.tabbedPane.getComponentAt(tableIndex);
+//            JScrollPane scrollPane = (JScrollPane) tablePanel.getComponent(0);
+//            JTable table = (JTable) scrollPane.getViewport().getView();
+//            CustomTableModel tableModel = (CustomTableModel) table.getModel();
+//            tableModel.addRow(new Object[tableModel.getColumnCount()]);
+            database.tables.get(tableIndex).addRow(row);
+            System.out.println(row.values);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public Boolean deleteRow(int tableIndex, int rowIndex/*, CustomTableModel tableModel*/){
+        if (rowIndex != -1) {
+//            tableModel.removeRow(rowIndex);
+            database.tables.get(tableIndex).deleteRow(rowIndex);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public Boolean updateCellValue(String value, int tableIndex, int columnIndex, int rowIndex/*, CustomTable table*/){
+        if (database.tables.get(tableIndex).columns.get(columnIndex).validate(value)){
+            database.tables.get(tableIndex).rows.get(rowIndex).setAt(columnIndex,value.trim());
+            return true;
+        }
+        return false;
+//        else {
+//            String data = database.tables.get(tableIndex).rows.get(rowIndex).getAt(columnIndex);
+//            if (data != null){
+//                table.setValueAt(data, rowIndex, columnIndex);
+//            }
+//            else {
+////                table.setValueAt("", rowIndex, columnIndex);
+//            }
+//
+//            JFrame frame = new JFrame("Помилка!!!");
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//
+//            JOptionPane.showMessageDialog(
+//                    frame,
+//                    "Введено некоректне значення",
+//                    "Помилка!!!",
+//                    JOptionPane.INFORMATION_MESSAGE
+//            );
+//        }
     }
 
     private boolean evaluateCondition(String columnValue, String operator, String inputValue, Column column) {
@@ -385,7 +450,7 @@ public class DatabaseManager {
         }
     }
 
-    public List<Row> projection(int selectedTab, CustomTableModel tableModel, Column column, String operator, String inputValue) {
+    public List<Row> projection(int selectedTab, Column column, String operator, String inputValue) {
         List<Row> resultRows = new ArrayList<>();
 
         List<Row> rows = database.tables.get(selectedTab).rows;
@@ -418,7 +483,7 @@ public class DatabaseManager {
 
         }
 
-        DBMS.getInstance().renderCells();
+//        DBMS.getInstance().renderCells();
 
         return resultRows;
     }
