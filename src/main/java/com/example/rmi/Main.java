@@ -18,6 +18,9 @@ public class Main {
 
     DatabaseManager dbManager = DatabaseManager.getInstance();
     dbManager.createDB("DB");
+    dbManager.populateTable();
+    dbManager.populateTable();
+
     final RemoteDBImpl server = new RemoteDBImpl();
     final Registry registry = LocateRegistry.createRegistry(8081);
     Remote stub = UnicastRemoteObject.exportObject(server,0);

@@ -1,13 +1,12 @@
 package com.example.rmi.remote;
 
+import com.example.rmi.component.*;
+
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.rmi.component.Table;
 import com.example.rmi.DatabaseManager;
-import com.example.rmi.component.Column;
-import com.example.rmi.component.Row;
 import com.example.rmi.component.column.ColumnType;
 
 public class RemoteDBImpl implements RemoteDB{
@@ -23,11 +22,11 @@ public class RemoteDBImpl implements RemoteDB{
   }
 
   @Override
-  public List<String> getTablesNames() throws RemoteException {
+  public List<TableData> getTablesData() throws RemoteException {
     List<Table> tables = DatabaseManager.database.tables;
-    List<String> names = new ArrayList<>();
-    for (Table table: tables) {
-      names.add(table.name);
+    List<TableData> names = new ArrayList<>();
+    for (int i = 0; i < tables.size(); i++) {
+      names.add(new TableData(tables.get(i).name,i));
     }
     return names;
   }
@@ -43,7 +42,11 @@ public class RemoteDBImpl implements RemoteDB{
   }
 
   @Override
-  public Boolean addColumn(int tableIndex, String name, ColumnType columnType) throws RemoteException {
+  public Boolean addColumn(int tableIndex, String name, ColumnType columnType, String min, String max) throws RemoteException {
+    if(columnType == ColumnType.MONEY_INVL) {
+      return DatabaseManager.getInstance().addColumn(tableIndex,name,columnType, min, max);
+    }
+
     return DatabaseManager.getInstance().addColumn(tableIndex,name,columnType);
   }
 
@@ -93,5 +96,10 @@ public class RemoteDBImpl implements RemoteDB{
       System.out.println(e);
     }
     System.out.println("Table created");
+  }
+
+  @Override
+  public Boolean deleteDuplicateRows(int tableIndex) throws RemoteException {
+    return DatabaseManager.getInstance().deleteDuplicateRows(tableIndex);
   }
 }

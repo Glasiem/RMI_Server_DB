@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Row  implements Serializable {
+public class Row implements Serializable {
     public List<String> values = new ArrayList<>();
 
     public String getAt(int index){

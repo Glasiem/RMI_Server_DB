@@ -274,6 +274,9 @@ public class DatabaseManager {
 
     public Boolean addRow(int tableIndex, Row row){
         if (tableIndex != -1) {
+            for (int i = 0; i < database.tables.get(tableIndex).columns.size(); i++) {
+                row.values.add("");
+            }
 //            JPanel tablePanel = (JPanel) instanceCSW.tabbedPane.getComponentAt(tableIndex);
 //            JScrollPane scrollPane = (JScrollPane) tablePanel.getComponent(0);
 //            JTable table = (JTable) scrollPane.getViewport().getView();
@@ -281,6 +284,7 @@ public class DatabaseManager {
 //            tableModel.addRow(new Object[tableModel.getColumnCount()]);
             database.tables.get(tableIndex).addRow(row);
             System.out.println(row.values);
+            System.out.println(database.tables.get(tableIndex).rows.size());
             return true;
         }
         else {
@@ -445,41 +449,24 @@ public class DatabaseManager {
         }
     }
 
-    public List<Row> projection(int selectedTab, Column column, String operator, String inputValue) {
-        List<Row> resultRows = new ArrayList<>();
 
-        List<Row> rows = database.tables.get(selectedTab).rows;
-        List<Column> columns = database.tables.get(selectedTab).columns;
 
-        addTable(column.getName() + " " + operator + " " + inputValue);
-        int filteredTableInd = database.tables.size() - 1;
-
-        for (Column selectedColumn : columns) {
-            if (ColumnType.valueOf(selectedColumn.type).equals(ColumnType.MONEY_INVL)) {
-                String min = ((MoneyInvlColumn) selectedColumn).getMin();
-                String max = ((MoneyInvlColumn) selectedColumn).getMax();
-
-                addColumn(filteredTableInd,selectedColumn.getName(),ColumnType.valueOf(selectedColumn.type), min, max);
-            } else{
-                addColumn(filteredTableInd,selectedColumn.name, ColumnType.valueOf(selectedColumn.type));
+    public Boolean deleteDuplicateRows(int tableIndex) {
+        int i = 0;
+        boolean flag = true;
+        while(i<database.tables.get(tableIndex).rows.size()){
+            flag = true;
+            for (int j = i+1; j < database.tables.get(tableIndex).rows.size(); j++) {
+                if (database.tables.get(tableIndex).rows.get(i).values.equals(database.tables.get(tableIndex).rows.get(j).values)) {
+                    deleteRow(tableIndex, i);
+                    flag = false;
+                    break;
+                }
+            }
+            if (flag){
+                i++;
             }
         }
-
-        for (Row row : rows) {
-            String columnValue = row.values.get(columns.indexOf(column)).toString();
-            boolean meetsCondition = evaluateCondition(columnValue, operator, inputValue, column);
-
-            if (meetsCondition) {
-                Row newRow = new Row();
-                newRow.values.addAll(row.values);
-                addRow(filteredTableInd, row);
-                resultRows.add(newRow);
-            }
-
-        }
-
-//        DBMS.getInstance().renderCells();
-
-        return resultRows;
+        return true;
     }
 }

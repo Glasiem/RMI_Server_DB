@@ -1,10 +1,10 @@
 package com.example.rmi.remote;
 
+import com.example.rmi.component.TableData;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
-import com.example.rmi.component.Column;
-import com.example.rmi.component.Row;
+import com.example.rmi.component.*;
 import com.example.rmi.component.column.ColumnType;
 
 public interface RemoteDB extends Remote {
@@ -13,7 +13,7 @@ public interface RemoteDB extends Remote {
 
   public List<Column> getColumns(int tableIndex) throws RemoteException;
 
-  public List<String> getTablesNames() throws RemoteException;
+  public List<TableData> getTablesData() throws RemoteException;
 
 
 
@@ -21,7 +21,7 @@ public interface RemoteDB extends Remote {
 
   public Boolean addRow(int tableIndex) throws RemoteException;
 
-  public Boolean addColumn(int tableIndex, String name, ColumnType columnType) throws RemoteException;
+  public Boolean addColumn(int tableIndex, String name, ColumnType columnType, String min, String max) throws RemoteException;
 
 
 
@@ -41,4 +41,7 @@ public interface RemoteDB extends Remote {
 
   public Boolean editCell(int tableIndex, int rowIndex, int columnIndex, String value) throws RemoteException;
   public void createTestTable() throws RemoteException;
+  public Boolean deleteDuplicateRows(int tableIndex) throws RemoteException;
+
   }
+
