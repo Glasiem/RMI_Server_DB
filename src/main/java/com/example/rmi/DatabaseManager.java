@@ -1,16 +1,21 @@
 package com.example.rmi;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.SQLException;
 
 import com.example.rmi.component.Table;
 import com.example.rmi.component.Column;
 import com.example.rmi.component.Database;
 import com.example.rmi.component.Row;
 import com.example.rmi.component.column.*;
+import com.example.rmi.component.io.SQLDatabaseExporter;
+import com.example.rmi.component.io.SQLDatabaseImporter;
 
 public class DatabaseManager {
     private static DatabaseManager instance;
+
+    private static final String USERNAME = "postgres";
+    private static final String PASSWORD = "root";
+    private static final String JDBC_URL = "jdbc:postgresql://localhost:5432/";
 //    public static DBMS instanceCSW;
 
     private DatabaseManager(){
@@ -57,6 +62,14 @@ public class DatabaseManager {
 //        DatabaseImporter.importDatabase(path);
 //    }
 
+    public void openRelationalDB(String name) throws SQLException {
+        SQLDatabaseImporter.importDatabase(
+                JDBC_URL +name, USERNAME, PASSWORD);
+    }
+    public void saveToRelationalDB(String name)  {
+        SQLDatabaseExporter.exportDatabase(database,
+                JDBC_URL +name, USERNAME, PASSWORD);
+    }
     public String renameDB(String name){
         if (name != null && !name.isEmpty()) {
             database.setName(name);
