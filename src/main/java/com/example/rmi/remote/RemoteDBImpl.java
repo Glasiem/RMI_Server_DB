@@ -43,7 +43,7 @@ public class RemoteDBImpl implements RemoteDB{
 
   @Override
   public Boolean addColumn(int tableIndex, String name, ColumnType columnType, String min, String max) throws RemoteException {
-    if(columnType == ColumnType.MONEY_INVL) {
+    if(columnType == ColumnType.MONEYINVL) {
       return DatabaseManager.getInstance().addColumn(tableIndex,name,columnType, min, max);
     }
 

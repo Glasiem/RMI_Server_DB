@@ -9,7 +9,7 @@ public class MoneyInvlColumn extends Column {
 
     public MoneyInvlColumn(String name, String min, String max) {
         super(name);
-        this.type = ColumnType.MONEY_INVL.name();
+        this.type = ColumnType.MONEYINVL.name();
         this.min = min;
         this.max = max;
     }

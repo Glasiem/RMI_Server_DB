@@ -6,12 +6,10 @@ import com.example.rmi.component.Database;
 import com.example.rmi.component.Row;
 import com.example.rmi.component.Table;
 import com.example.rmi.component.column.ColumnType;
+import com.example.rmi.component.column.MoneyInvlColumn;
 
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class SQLDatabaseExporter {
 
@@ -19,6 +17,7 @@ public class SQLDatabaseExporter {
         try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
             try {
                 connection.setAutoCommit(false);
+                dropAllTables(connection);
                 for (Table table : localDatabase.tables) {
                     exportTable(connection, table);
                 }
@@ -35,10 +34,11 @@ public class SQLDatabaseExporter {
     }
 
     private static void exportTable(Connection connection, Table table) throws SQLException {
-        // Create table
+        // Split DROP TABLE and CREATE TABLE into separate statements
         String createTableSQL = generateCreateTableSQL(table);
+
         try (PreparedStatement createTableStatement = connection.prepareStatement(createTableSQL)) {
-            createTableStatement.execute();
+            createTableStatement.execute(); // Execute CREATE TABLE statement
         }
 
         // Insert data
@@ -52,16 +52,21 @@ public class SQLDatabaseExporter {
         }
     }
 
+
     private static String generateCreateTableSQL(Table table) {
-        StringBuilder sqlBuilder = new StringBuilder("DROP TABLE IF EXISTS ").append(table.name).append("; ")
-                .append("CREATE TABLE ")
+        StringBuilder sqlBuilder = new StringBuilder("CREATE TABLE ")
                 .append(table.name)
                 .append(" (");
 
         for (Column column : table.columns) {
-            sqlBuilder.append(column.name)
+            String columnNameWithType = column.name + "_" + column.type;
+            if (column instanceof MoneyInvlColumn) {
+                MoneyInvlColumn moneyInvlColumn = (MoneyInvlColumn) column;
+                columnNameWithType += "_" + moneyInvlColumn.getMin() + "_" + moneyInvlColumn.getMax();
+            }
+            sqlBuilder.append(columnNameWithType)
                     .append(" ")
-                    .append(ColumnType.valueOf(column.type).getSqlTypeName())
+                    .append("VARCHAR(256)")
                     .append(", ");
         }
 
@@ -71,36 +76,69 @@ public class SQLDatabaseExporter {
         return sqlBuilder.toString();
     }
 
+
     private static String generateInsertDataSQL(Table table) {
         StringBuilder sqlBuilder = new StringBuilder("INSERT INTO ")
                 .append(table.name)
                 .append(" (");
 
         for (Column column : table.columns) {
-            sqlBuilder.append(column.name).append(", ");
+            String columnName = column.name + "_" + column.type;
+            if (column.type.equals(ColumnType.MONEYINVL.name())) {
+                MoneyInvlColumn moneyInvlColumn = (MoneyInvlColumn) column;
+                columnName += "_" + moneyInvlColumn.getMin() + "_" + moneyInvlColumn.getMax();
+            }
+            sqlBuilder.append(columnName).append(", ");
         }
 
         sqlBuilder.delete(sqlBuilder.length() - 2, sqlBuilder.length());
-
         sqlBuilder.append(") VALUES (");
 
-        table.columns.forEach(c -> sqlBuilder.append("?, "));
+        for (int i = 0; i < table.columns.size(); i++) {
+            sqlBuilder.append("?, ");
+        }
 
         sqlBuilder.delete(sqlBuilder.length() - 2, sqlBuilder.length());
-
         sqlBuilder.append(");");
 
         return sqlBuilder.toString();
     }
 
+
+
     private static void setPreparedStatementParameters(PreparedStatement statement, Table table, Row row) throws SQLException {
         for (int i = 0; i < table.columns.size(); i++) {
-            if (table.columns.get(i).type.equals("INT"))
-                statement.setInt(i + 1, Integer.parseInt(row.getAt(i)));
-            else if (table.columns.get(i).type.equals("REAL")) {
-                statement.setBigDecimal(i + 1, new BigDecimal(row.getAt(i)));
-            } else
-                statement.setString(i + 1, row.getAt(i));
+            String data = row.getAt(i);
+            if (data == null || data.isEmpty()) {
+                // If the data is empty, set it as null or keep it as an empty string based on the column type
+                if (table.columns.get(i).type.equals("INT") || table.columns.get(i).type.equals("REAL")) {
+                    statement.setNull(i + 1, java.sql.Types.NULL); // Set null for INT and REAL types
+                } else {
+                    statement.setString(i + 1, data); // Set empty string for other types
+                }
+            } else {
+                // Parse and set data based on column type
+                if (table.columns.get(i).type.equals("INT")) {
+                    statement.setInt(i + 1, Integer.parseInt(data));
+                } else if (table.columns.get(i).type.equals("REAL")) {
+                    statement.setBigDecimal(i + 1, new BigDecimal(data));
+                } else {
+                    statement.setString(i + 1, data);
+                }
+            }
         }
+    }
+
+
+    private static void dropAllTables(Connection connection) throws SQLException {
+        PreparedStatement ps = connection.prepareStatement("SHOW TABLES");
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            String tableName = rs.getString(1);
+            PreparedStatement dropStatement = connection.prepareStatement("DROP TABLE IF EXISTS " + tableName);
+            dropStatement.execute();
+        }
+        rs.close();
+        ps.close();
     }
 }

@@ -6,8 +6,8 @@ public enum ColumnType {
     REAL("DECIMAL"),
     STRING("VARCHAR(256)"),
 
-    MONEY("DECIMAL"),
-    MONEY_INVL("VARCHAR(256)");
+    MONEY("VARCHAR(256)"),
+    MONEYINVL("VARCHAR(256)");
     private final String sqlTypeName;
 
     ColumnType(String sqlTypeName) {

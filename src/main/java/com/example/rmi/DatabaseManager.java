@@ -13,9 +13,9 @@ import com.example.rmi.component.io.SQLDatabaseImporter;
 public class DatabaseManager {
     private static DatabaseManager instance;
 
-    private static final String USERNAME = "postgres";
-    private static final String PASSWORD = "root";
-    private static final String JDBC_URL = "jdbc:postgresql://localhost:5432/";
+    private static final String USERNAME = "root";
+    private static final String PASSWORD = "";
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/test";
 //    public static DBMS instanceCSW;
 
     private DatabaseManager(){
@@ -32,7 +32,7 @@ public class DatabaseManager {
     public static Database database;
 
     public void populateTable() {
-        Table table = new Table("testTable");
+        Table table = new Table("newTestTable" + database.tables.size());
         table.addColumn(new IntegerColumn("column1"));
         table.addColumn(new RealColumn("column2"));
         table.addColumn(new StringColumn("column3"));
@@ -56,6 +56,7 @@ public class DatabaseManager {
         row2.values.add("15.00");
         table.addRow(row2);
         database.addTable(table);
+        SQLDatabaseExporter.exportDatabase(database,JDBC_URL,USERNAME,PASSWORD);
     }
 
 //    public void openDB(String path){
@@ -177,7 +178,7 @@ public class DatabaseManager {
                         Column columnMoney = new MoneyColumn(columnName);
                         database.tables.get(tableIndex).addColumn(columnMoney);
                     }
-                    case MONEY_INVL -> {
+                    case MONEYINVL -> {
                         Column columnMoneyInvl = new MoneyInvlColumn(columnName, min, max);
                         database.tables.get(tableIndex).addColumn(columnMoneyInvl);
                     }
@@ -287,7 +288,7 @@ public class DatabaseManager {
 
     public Boolean addRow(int tableIndex, Row row){
         if (tableIndex != -1) {
-            for (int i = 0; i < database.tables.get(tableIndex).columns.size(); i++) {
+            for (int i = row.values.size(); i < database.tables.get(tableIndex).columns.size(); i++) {
                 row.values.add("");
             }
 //            JPanel tablePanel = (JPanel) instanceCSW.tabbedPane.getComponentAt(tableIndex);
