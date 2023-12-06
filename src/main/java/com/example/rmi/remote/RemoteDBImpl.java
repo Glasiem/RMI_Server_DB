@@ -64,22 +64,7 @@ public class RemoteDBImpl implements RemoteDB{
   public Boolean deleteRow(int tableIndex, int rowIndex) throws RemoteException {
     return DatabaseManager.getInstance().deleteRow(tableIndex,rowIndex);
   }
-  
-  @Override
-  public Boolean renameTable(int tableIndex, String name) throws RemoteException {
-    return DatabaseManager.getInstance().renameTable(tableIndex,name);
-  }
 
-  @Override
-  public Boolean renameColumn(int tableIndex, int columnIndex, String name) throws RemoteException {
-    return DatabaseManager.getInstance().renameColumn(tableIndex,columnIndex,name);
-  }
-
-  @Override
-  public Boolean changeColumnType(int tableIndex, int columnIndex, ColumnType columnType)
-      throws RemoteException {
-    return DatabaseManager.getInstance().changeColumnType(tableIndex,columnIndex,columnType);
-  }
 
   @Override
   public Boolean editCell(int tableIndex, int rowIndex, int columnIndex, String value) throws RemoteException {

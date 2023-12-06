@@ -45,7 +45,7 @@ public class Table {
                     Column moneyColumn = new MoneyColumn(column.name);
                     this.columns.add(moneyColumn);
                 }
-                case MONEY_INVL -> {
+                case MONEYINVL -> {
                     Column moneyInvlColumn = new MoneyInvlColumn(column.name, ((MoneyInvlColumn) column).getMin(), ((MoneyInvlColumn) column).getMax());
                     this.columns.add(moneyInvlColumn);
                 }

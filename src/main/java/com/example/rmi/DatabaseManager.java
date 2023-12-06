@@ -24,11 +24,21 @@ public class DatabaseManager {
     public static DatabaseManager getInstance(){
         if (instance == null){
             instance = new DatabaseManager();
-//            instanceCSW = DBMS.getInstance();
+//            database = new Database("DB");
+            try {
+                isImporting = true;
+                SQLDatabaseImporter.importDatabase(JDBC_URL,USERNAME,PASSWORD);
+                isImporting = false;
+                System.out.println(database.tables.size());
+            } catch (SQLException e){
+                isImporting = false;
+                throw new RuntimeException(e);
+            }
+//            System.out.println(database.tables.size());
         }
         return instance;
     }
-
+    public static boolean isImporting;
     public static Database database;
 
     public void populateTable() {
@@ -107,20 +117,10 @@ public class DatabaseManager {
 //            DBMS.getInstance().tabbedPane.addTab(name, tablePanel);
             Table table = new Table(name);
             database.addTable(table);
+            if (!isImporting) SQLDatabaseExporter.exportDatabase(database,JDBC_URL,USERNAME,PASSWORD);
             return true;
         }
         else {
-            return false;
-        }
-    }
-
-    public Boolean renameTable(int tableIndex, String name){
-        if (name != null && !name.isEmpty() && tableIndex != -1) {
-//            instanceCSW.tabbedPane.setTitleAt(tableIndex,name);
-            database.tables.get(tableIndex).setName(name);
-            return true;
-        }
-        else{
             return false;
         }
     }
@@ -131,6 +131,7 @@ public class DatabaseManager {
 //            instanceCSW.tabbedPane.removeTabAt(tableIndex);
 
             database.deleteTable(tableIndex);
+            SQLDatabaseExporter.exportDatabase(database,JDBC_URL,USERNAME,PASSWORD);
             return true;
         }
         else {
@@ -186,6 +187,7 @@ public class DatabaseManager {
                 for (Row row : database.tables.get(tableIndex).rows) {
                     row.values.add("");
                 }
+                if (!isImporting) SQLDatabaseExporter.exportDatabase(database,JDBC_URL,USERNAME,PASSWORD);
                 return true;
             }
             else {
@@ -197,89 +199,12 @@ public class DatabaseManager {
         }
     }
 
-
-    public Boolean renameColumn(int tableIndex, int columnIndex/*, String oldColumnName*/, String newColumnName/*, JTable table*/){
-        if (newColumnName != null && !newColumnName.isEmpty()) {
-            if (tableIndex != -1 && columnIndex != -1) {
-//                TableColumn column = table.getColumnModel().getColumn(columnIndex);
-//                column.setHeaderValue(column.getHeaderValue().toString().replace(oldColumnName, newColumnName));
-//                table.getTableHeader().repaint();
-
-                database.tables.get(tableIndex).columns.get(columnIndex).setName(newColumnName);
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return false;
-        }
-    }
-
-    public Boolean changeColumnType(int tableIndex, int columnIndex, ColumnType columnType/*, JTable table*/){
-        return changeColumnType(tableIndex, columnIndex, columnType,/*table,*/ "", "");
-    }
-
-    public Boolean changeColumnType(int tableIndex, int columnIndex, ColumnType columnType/*, JTable table*/, String min, String max){
-        if (tableIndex != -1 && columnIndex != -1) {
-
-//            String name = database.tables.get(tableIndex).columns.get(columnIndex).name;
-//            TableColumn column1 = table.getColumnModel().getColumn(columnIndex);
-//            if(!min.equals("") && !max.equals("")){
-//                column1.setHeaderValue(name + " (" + columnType.name() + ")" + "(" + min + ":" + max + ")");
-//            } else {
-//                column1.setHeaderValue(name + " (" + columnType.name() + ")");
-//            }
-//
-//            table.getTableHeader().repaint();
-
-
-            switch (columnType) {
-                case INT -> {
-                    Column columnInt = new IntegerColumn(database.tables.get(tableIndex).columns.get(columnIndex).name);
-                    database.tables.get(tableIndex).columns.set(columnIndex, columnInt);
-                }
-                case REAL -> {
-                    Column columnReal = new RealColumn(database.tables.get(tableIndex).columns.get(columnIndex).name);
-                    database.tables.get(tableIndex).columns.set(columnIndex, columnReal);
-                }
-                case STRING -> {
-                    Column columnStr = new StringColumn(database.tables.get(tableIndex).columns.get(columnIndex).name);
-                    database.tables.get(tableIndex).columns.set(columnIndex, columnStr);
-                }
-                case CHAR -> {
-                    Column columnChar = new CharColumn(database.tables.get(tableIndex).columns.get(columnIndex).name);
-                    database.tables.get(tableIndex).columns.set(columnIndex, columnChar);
-                }
-                case MONEY -> {
-                    Column columnMoney = new MoneyColumn(database.tables.get(tableIndex).columns.get(columnIndex).name);
-                    database.tables.get(tableIndex).columns.set(columnIndex, columnMoney);
-                }
-                case MONEY_INVL -> {
-                    Column column = database.tables.get(tableIndex).columns.get(columnIndex);
-//                    String name = column.name + "(" + min + ":" + max + ")";
-                    Column columnMoneyInvl = new MoneyInvlColumn(column.name, min, max);
-                    database.tables.get(tableIndex).columns.set(columnIndex, columnMoneyInvl);
-                }
-            }
-            for (Row row: database.tables.get(tableIndex).rows) {
-                row.values.set(columnIndex,"");
-            }
-            return true;
-//            for (int i = 0; i < database.tables.get(tableIndex).rows.size(); i++) {
-//                table.setValueAt("", i, columnIndex);
-//            }
-        }
-        else {
-            return false;
-        }
-    }
 
     public Boolean deleteColumn(int tableIndex, int columnIndex/*, CustomTableModel tableModel*/){
         if (columnIndex != -1) {
 //            tableModel.removeColumn(columnIndex);
             database.tables.get(tableIndex).deleteColumn(columnIndex);
+            SQLDatabaseExporter.exportDatabase(database,JDBC_URL,USERNAME,PASSWORD);
             return true;
         } else {
             return false;
@@ -299,6 +224,7 @@ public class DatabaseManager {
             database.tables.get(tableIndex).addRow(row);
             System.out.println(row.values);
             System.out.println(database.tables.get(tableIndex).rows.size());
+            if (!isImporting) SQLDatabaseExporter.exportDatabase(database,JDBC_URL,USERNAME,PASSWORD);
             return true;
         }
         else {
@@ -310,6 +236,7 @@ public class DatabaseManager {
         if (rowIndex != -1) {
 //            tableModel.removeRow(rowIndex);
             database.tables.get(tableIndex).deleteRow(rowIndex);
+            SQLDatabaseExporter.exportDatabase(database,JDBC_URL,USERNAME,PASSWORD);
             return true;
         }
         else {
@@ -320,149 +247,11 @@ public class DatabaseManager {
     public Boolean updateCellValue(String value, int tableIndex, int columnIndex, int rowIndex/*, CustomTable table*/){
         if (database.tables.get(tableIndex).columns.get(columnIndex).validate(value)){
             database.tables.get(tableIndex).rows.get(rowIndex).setAt(columnIndex,value.trim());
+            SQLDatabaseExporter.exportDatabase(database,JDBC_URL,USERNAME,PASSWORD);
             return true;
         }
         return false;
-//        else {
-//            String data = database.tables.get(tableIndex).rows.get(rowIndex).getAt(columnIndex);
-//            if (data != null){
-//                table.setValueAt(data, rowIndex, columnIndex);
-//            }
-//            else {
-////                table.setValueAt("", rowIndex, columnIndex);
-//            }
-//
-//            JFrame frame = new JFrame("Помилка!!!");
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//            JOptionPane.showMessageDialog(
-//                    frame,
-//                    "Введено некоректне значення",
-//                    "Помилка!!!",
-//                    JOptionPane.INFORMATION_MESSAGE
-//            );
-//        }
     }
-
-    private boolean evaluateCondition(String columnValue, String operator, String inputValue, Column column) {
-        ColumnType columnType = ColumnType.valueOf(column.getType());
-
-        if(columnValue == null || columnValue.equals("")) return false;
-
-        // Handle different data types
-        switch (columnType) {
-            case INT: {
-                int columnIntValue = Integer.parseInt(columnValue);
-                int inputIntValue = Integer.parseInt(inputValue);
-                return compareIntegers(columnIntValue, inputIntValue, operator);
-            }
-            case REAL: {
-                double columnDoubleValue = Double.parseDouble(columnValue);
-                double inputDoubleValue = Double.parseDouble(inputValue);
-                return compareDoubles(columnDoubleValue, inputDoubleValue, operator);
-            }
-            case STRING:
-                return compareStrings(columnValue, inputValue, operator);
-            case CHAR:
-                return compareChars(columnValue, inputValue, operator);
-            case MONEY: {
-                double columnMoneyValue = MoneyColumn.toDouble(columnValue);
-                double inputMoneyValue = MoneyColumn.toDouble(inputValue);
-                return compareDoubles(columnMoneyValue, inputMoneyValue, operator);
-            }
-            case MONEY_INVL: {
-                double columnMoneyValue = MoneyColumn.toDouble(columnValue);
-                double inputMoneyValue = MoneyColumn.toDouble(inputValue);
-                return compareDoubles(columnMoneyValue, inputMoneyValue, operator);
-            }
-            default:
-                // Handle unknown data type or invalid operator
-                return false;
-        }
-    }
-
-    private boolean compareIntegers(int columnValue, int inputValue, String operator) {
-        switch (operator) {
-            case ">":
-                return columnValue > inputValue;
-            case "<":
-                return columnValue < inputValue;
-            case ">=":
-                return columnValue >= inputValue;
-            case "<=":
-                return columnValue <= inputValue;
-            case "==":
-                return columnValue == inputValue;
-            default:
-                return false;
-        }
-    }
-
-    private boolean compareDoubles(double columnValue, double inputValue, String operator) {
-        switch (operator) {
-            case ">":
-                return columnValue > inputValue;
-            case "<":
-                return columnValue < inputValue;
-            case ">=":
-                return columnValue >= inputValue;
-            case "<=":
-                return columnValue <= inputValue;
-            case "==":
-                return Double.compare(columnValue, inputValue) == 0;
-            default:
-                // Handle an invalid operator
-                return false;
-        }
-    }
-
-    private boolean compareStrings(String columnValue, String inputValue, String operator) {
-        switch (operator) {
-            case "==":
-                return columnValue.equals(inputValue);
-            case "!=":
-                return !columnValue.equals(inputValue);
-            case ">":
-                return columnValue.compareTo(inputValue) > 0;
-            case "<":
-                return columnValue.compareTo(inputValue) < 0;
-            case ">=":
-                return columnValue.compareTo(inputValue) >= 0;
-            case "<=":
-                return columnValue.compareTo(inputValue) <= 0;
-            default:
-                // Handle an invalid operator
-                return false;
-        }
-    }
-    private boolean compareChars(String columnValue, String inputValue, String operator) {
-        if (columnValue.length() != 1 || inputValue.length() != 1) {
-            // Handle invalid input (not single characters)
-            return false;
-        }
-
-        char columnChar = columnValue.charAt(0);
-        char inputChar = inputValue.charAt(0);
-
-        switch (operator) {
-            case "==":
-                return columnChar == inputChar;
-            case "!=":
-                return columnChar != inputChar;
-            case ">":
-                return columnChar > inputChar;
-            case "<":
-                return columnChar < inputChar;
-            case ">=":
-                return columnChar >= inputChar;
-            case "<=":
-                return columnChar <= inputChar;
-            default:
-                // Handle an invalid operator
-                return false;
-        }
-    }
-
 
 
     public Boolean deleteDuplicateRows(int tableIndex) {
@@ -481,6 +270,7 @@ public class DatabaseManager {
                 i++;
             }
         }
+        SQLDatabaseExporter.exportDatabase(database,JDBC_URL,USERNAME,PASSWORD);
         return true;
     }
 }

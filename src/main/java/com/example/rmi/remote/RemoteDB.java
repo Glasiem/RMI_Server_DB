@@ -33,12 +33,6 @@ public interface RemoteDB extends Remote {
 
 
 
-  public Boolean renameTable(int tableIndex, String name) throws RemoteException;
-  public Boolean renameColumn(int tableIndex, int columnIndex, String name) throws RemoteException;
-  public Boolean changeColumnType(int tableIndex, int columnIndex, ColumnType columnType) throws RemoteException;
-
-
-
   public Boolean editCell(int tableIndex, int rowIndex, int columnIndex, String value) throws RemoteException;
   public void createTestTable() throws RemoteException;
   public Boolean deleteDuplicateRows(int tableIndex) throws RemoteException;
